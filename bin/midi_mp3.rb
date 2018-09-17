@@ -1,4 +1,11 @@
 #!/usr/bin/env ruby
+
+require 'pathname'
+
+ENV['BUNDLE_GEMFILE'] ||= File.expand_path("../../Gemfile",
+                                            Pathname.new(__FILE__).realpath)
+
+require 'bundler/setup'
 require 'optparse'
 require 'midilib/sequence'
 require 'midilib/consts'
