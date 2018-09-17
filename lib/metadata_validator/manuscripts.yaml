@@ -1,0 +1,169 @@
+---
+- slug: unknown
+  name: Unknown
+  archive: 
+  shelfmark: 
+  diamm: 
+  description: 
+- slug: canconiero_de_palacio
+  name: Canconiero de Palacio
+  archive: Palacio Real, Biblioteca [E-Mp]
+  shelfmark: '1335'
+  diamm: 1157
+  description: 'manuscript of polyphony , c. 1505-20; provenance: Spain'
+  urls:
+  - name: IMSLP
+    url: http://imslp.org/wiki/Cancionero_Musical_de_Palacio_(Various)
+- slug: bamberg
+  name: Bamberg Codex
+  archive: Staatsbibliothek [D-BAs]
+  shelfmark: Lit. 115
+  diamm: 863
+  description: 'theory treatises and polyphony , second half of 13th century; provenance: France'
+  urls:
+  - name: State Library of Bamberg
+    url: http://www.nbn-resolving.de/urn:nbn:de:bvb:22-dtl-0000002752
+- slug: cz_chrm_12580
+  name: CZ-CHRm 12580
+  archive: Mestske Muzeum [CZ-CHRm]
+  shelfmark: '12580'
+  diamm: 1063
+  description: 'chant book with added polyphony , 16th century; provenance: Bohemia'
+- slug: montpellier
+  name: Montpellier Codex
+  archive: Faculté de Médecine [F-MO]
+  shelfmark: H 196
+  diamm: 888
+  description: 'manuscript of polyphony , c. 1280 and later. late 13th-early 14th century; provenance: France'
+  urls:
+  - name: Bibliothèque Interuniversitaire Médecine de Montpellier
+    url: https://manuscrits.biu-montpellier.fr/vignettem.php?GENRE%5B%5D=MP&ETG=OR&ETT=OR&ETM=OR&BASE=manuf
+- slug: wolfenbuttel
+  name: Wolfenbüttel Chansonnier
+  archive: Herzog August Bibliothek [D-W]
+  shelfmark: Cod. Guelf. 287 Extrav.
+  diamm: 2016
+  description: 'manuscript of polyphony , c. 1461-5; provenance: France'
+  urls:
+  - name: Wolfenbütteler Digitale Bibliothek
+    url: http://diglib.hab.de/mss/287-extrav/start.htm
+- slug: gb_ob_ms_ashmole_191
+  name: GB-Ob MS. Ashmole 191
+  archive: Bodleian Library [GB-Ob]
+  shelfmark: MS. Ashmole 191
+  diamm: 488
+  description: 'non-music MS with interpolated music , 15th century: c.1445-60; provenance: England'
+  urls:
+  - name: DIAMM
+    url: https://www.diamm.ac.uk/sources/488/#/images
+- slug: henry_viii
+  name: Henry VIII Manuscript
+  archive: British Library [GB-Lbl]
+  shelfmark: Add. MS 31922
+  diamm: 1238
+  description: 'manuscript of polyphony , c. 1510-20; provenance: England'
+  urls:
+  - name: DIAMM
+    url: https://www.diamm.ac.uk/sources/1238/#/images
+- slug: selden_carol_book
+  name: The Selden Carol Book
+  archive: Bodleian Library [GB-Ob]
+  shelfmark: MS. Arch. Selden B. 26
+  diamm: 803
+  description: 'composite of 5 unrelated manuscripts bound together in 17th century, 1425-40, c.1450, later addition (f.33v) c. 1500; provenance: England'
+  urls:
+  - name: Bodleian Library
+    url: http://bodley30.bodley.ox.ac.uk:8180/luna/servlet/s/jm86x1
+- slug: agincourt_roll
+  name: Agincourt Roll
+  archive: Trinity College [GB-Ctc]
+  shelfmark: O.3.58
+  diamm: 320
+  description: 'rotulus , Early 15th century; provenance: England'
+  urls:
+  - name: DIAMM
+    url: https://www.diamm.ac.uk/sources/320/#/images
+- slug: llibre_vermell
+  name: Llibre Vermell
+  archive: Monasterio de S Maria [E-MO]
+  shelfmark: MS 1
+  diamm: 69
+  description: 'non-music manuscript with music interpolations, End of 14th or 1st quarter of 15th century; provenance: Spain'
+  urls:
+  - name: IMSLP
+    url: http://imslp.org/wiki/Llibre_Vermell_de_Montserrat_(Various)
+- slug: carmina_burana
+  name: Carmina Burana
+  archive: Bayerische Staatsbibliothek [D-Mbs]
+  shelfmark: Clm MSS 4660
+  diamm: 
+  description: 
+  urls:
+  - name: Bavarian State Library
+    url: http://stimmbuecher.digitale-sammlungen.de/view?id=bsb00085130
+- slug: gb_lbl_harley_978
+  name: GB-Lbl Harley 978
+  archive: British Library [GB-Lbl]
+  shelfmark: Harley 978
+  diamm: 434
+  description: 'non-music MS with interpolated music , Late 13th century; provenance: England'
+  urls:
+  - name: DIAMM
+    url: https://www.diamm.ac.uk/sources/434/#/images
+- slug: f_pn_fonds_francais_25566
+  name: F-PN fonds français 25566
+  archive: Bibliothèque Nationale [F-PN]
+  shelfmark: fonds français 25566
+  diamm: 896
+  description: 'non-music MS with interpolated music , second half of 13th century; provenance: France' 
+  urls:
+  - name: BNF
+    url: http://gallica.bnf.fr/ark:/12148/btv1b6001348v
+- slug: codex_squarcialupi
+  name: Codex Squarcialupi
+  archive: Biblioteca Medicea-Laurenziana [I-Fl]
+  shelfmark: MS Mediceo Palatino 87
+  diamm: 671
+  description: 'manuscript of polyphony , 14th century; provenance: Italy'
+  urls:
+  - name: IMSLP
+    url: http://imslp.org/wiki/Squarcialupi_Codex_(Various)
+- slug: d_leu_ms_1236
+  name: D-LEu MS 1236
+  archive: Universitätsbibliothek [D-LEu]
+  shelfmark: MS 1236
+  diamm: 1865
+  description: 'manuscript of polyphony , Mid 15th century; provenance: Bavaria'
+- slug: gb_occ_ms_59
+  name: GB-Occ MS 59
+  archive: Corpus Christi College [GB-Occ]
+  shelfmark: MS 59
+  diamm: 558
+  description: 'non-music MS with interpolated music , 13th century; provenance: England'
+  urls:
+  - name: DIAMM
+    url: https://www.diamm.ac.uk/sources/558/#/images
+- slug: gb_add_ms_29289
+  name: GB-Lbl Add. MS 29289
+  archive: British Library [GB-Lbl]
+  shelfmark: Add. MS 29289
+  diamm: 1878
+  description: 'partbook , c. 1625-30; provenance: England'
+- slug: i_fn_ms_magl_xix_108
+  name: I-Fn MS Magl. XIX.108
+  archive: Biblioteca Nazionale Centrale [I-Fn]
+  shelfmark: MS Magl. XIX.108
+  diamm: 1402
+  description: 'Canzonettes and balli, 16th century; provenance: Italy' 
+- slug: chantilly_codex
+  name: Chantilly Codex
+  archive: 	Musée Condé, Chantilly, France (F-CH)
+  shelfmark: MS 564 "Chantilly Codex"
+  diamm: 201
+  description: manuscript of polyphony, Late 14th century
+- slug: manuscrit_du_roi
+  name: Manuscrit du Roi
+  archive: 	
+  shelfmark:
+  diamm: 
+  description: 
