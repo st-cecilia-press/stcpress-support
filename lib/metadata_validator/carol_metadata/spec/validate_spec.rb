@@ -56,7 +56,7 @@ describe "validate_piece" do
       @metadata["dates"][0] = 1500
       @metadata["dates"][1] = 1400
       val = @validator.validate(@metadata,@slug)
-      expect(val).to eq(['second date must be larger than first date'])
+      expect(val).to eq(['second date must be larger than the first date'])
     end
     it "rejects dates where more than two numbers are in list" do
       @metadata["dates"][0] = 1400
