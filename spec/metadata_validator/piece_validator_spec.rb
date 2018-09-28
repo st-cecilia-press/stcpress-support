@@ -3,35 +3,49 @@ require 'yaml'
 
 
 def pv_factory(books: YAML.load_file('./spec/fixtures/book_list.yaml'), manuscripts: YAML.load_file('./spec/fixtures/manuscript_list.yaml'),
-  piece: YAML.load_file('./spec/fixtures/basic.yaml'))  
-  PieceValidator.new(books: books, manuscripts: manuscripts, piece: piece)
+  piece: YAML.load_file('./spec/fixtures/basic.yaml'), slug: 'slug')  
+  File.open("./#{slug}/metadata.yaml", 'w') {|f| f.write piece.to_yaml } 
+  PieceValidator.new(books: books, manuscripts: manuscripts, slug: slug)
 end
 describe PieceValidator do
   before(:each) do
-    @books = YAML.load_file('./spec/fixtures/book_list.yaml')
-    @manuscripts = YAML.load_file('./spec/fixtures/manuscript_list.yaml')
+    @slug = 'slug'
+    Dir.mkdir("./slug")
+  end
+  after(:each) do
+    FileUtils.rm_r "./slug"
   end
   describe "initialize" do
     before(:each) do
-      @piece = YAML.load_file('./spec/fixtures/basic.yaml')
+      @books = YAML.load_file('./spec/fixtures/book_list.yaml')
+      @manuscripts = YAML.load_file('./spec/fixtures/manuscript_list.yaml')
+      piece = YAML.load_file('./spec/fixtures/basic.yaml')
+      File.open("./#{@slug}/metadata.yaml", 'w') {|f| f.write piece.to_yaml } 
     end
     it "accepts good input" do
-      v = pv_factory
+      v = PieceValidator.new(books: @books, manuscripts: @manuscripts, slug: @slug)
       expect(v.books[0]['slug'].class).to eq(String)
       expect(v.manuscripts[0]['slug'].class).to eq(String)
-      expect(v.piece['title'].class).to eq(String)
+      expect(v.slug.class).to eq(String)
     end
     it "rejects missing books" do
-      expect{PieceValidator.new(manuscripts: @manuscripts, piece: @piece)}.to raise_error(ArgumentError)
+      expect{PieceValidator.new(manuscripts: @manuscripts, slug: @slug)}.to raise_error(ArgumentError)
     end
     it "rejects missing manuscripts" do
-      expect{PieceValidator.new(books: @books, piece: @piece)}.to raise_error(ArgumentError)
+      expect{PieceValidator.new(books: @books, slug: @slug)}.to raise_error(ArgumentError)
     end
-    it "rejects missing piece" do
+    it "rejects missing slug" do
       expect{PieceValidator.new(books: @books, manuscripts: @manuscripts)}.to raise_error(ArgumentError)
     end
   end
   describe "validate" do
+    it "rejects missing metadata file" do
+      pv = pv_factory 
+      File.delete('./slug/metadata.yaml')
+      result = pv.validate
+      expect(result.successful?).to be_falsey
+      expect(result.errors.first).to eq('metadata.yaml file missing')
+    end
     context "basic data" do
       before(:each) do
         @piece = YAML.load_file('./spec/fixtures/basic.yaml')
@@ -204,17 +218,184 @@ describe PieceValidator do
         expect(result.errors.first).to eq('Only two numbers allowed in dates list')
       end
     end
-   #NOT SURE IF THIS MAKES SENSE ANYMORE
-   # context "manuscript checks" do
-   #   before(:each) do
-   #     @piece = YAML.load_file('./spec/fixtures/manuscript.yaml')
-   #     @slug = 'slug'
-   #     Dir.mkdir("./slug")
-   #     `touch ./slug/file.jpg`
-   #   end
-   #   after(:each) do
-   #     FileUtils.rm_r "./slug" 
-   #   end
-   # end
+    context "manuscript checks" do
+      before(:each) do
+        @piece = YAML.load_file('./spec/fixtures/manuscript.yaml')
+        `touch ./slug/file.jpg`
+      end
+
+      
+      it "accepts good data" do
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_truthy
+      end
+      it "rejects empty manuscript name" do
+        @piece["manuscripts"][0]["name"] = ''
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Need Manuscript Name')
+      end
+      it "rejects nil manuscript name" do
+        @piece["manuscripts"][0]["name"] = nil
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Need Manuscript Name')
+      end
+      it "rejects missing manuscript name" do
+        @piece["manuscripts"][0].delete('name')
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Need Manuscript Name')
+      end
+      it "rejects empty image url" do
+        @piece["manuscripts"][0]["images"][0]["url"] = ''
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Image must have URL')
+      end
+      it "rejects nil image url" do
+        @piece["manuscripts"][0]["images"][0]["url"] = nil
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Image must have URL')
+      end
+      it "rejects missing image url" do
+        @piece["manuscripts"][0]["images"][0].delete('url')
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Image must have URL')
+      end
+      it "rejects empty image filename" do
+        @piece["manuscripts"][0]["images"][0]["filename"] = ''
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Image must have Filename')
+      end
+      it "rejects nil image filename" do
+        @piece["manuscripts"][0]["images"][0]["filename"] = nil
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Image must have Filename')
+      end
+      it "rejects missing image filename" do
+        @piece["manuscripts"][0]["images"][0].delete('filename')
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Image must have Filename')
+      end
+      it "rejects if filename's file doesn't exist" do
+        File.delete('./slug/file.jpg')
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq("'file.jpg' doesn't exist")
+      end
+      it "rejects manuscript name that's not in manuscript list" do
+        @piece["manuscripts"][0]["name"] = 'alwefijalewij'
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Manuscript name not found in Manuscript list')
+      end
+    end
+    context "book checks" do
+      before(:each) do
+        @piece = YAML.load_file('./spec/fixtures/book.yaml')
+        `touch ./slug/file.jpg`
+      end
+      
+      it "accepts good data" do
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_truthy
+      end
+      it "rejects empty book slug" do
+        @piece["books"][0]["slug"] = ''
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Need Book Slug')
+      end
+      it "rejects nil book slug" do
+        @piece["books"][0]["slug"] = nil
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Need Book Slug')
+      end
+      it "rejects missing book slug" do
+        @piece["books"][0].delete('slug')
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Need Book Slug')
+      end
+      it "rejects empty image url" do
+        @piece["books"][0]["images"][0]["url"] = ''
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Image must have URL')
+      end
+      it "rejects nil image url" do
+        @piece["books"][0]["images"][0]["url"] = nil
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Image must have URL')
+      end
+      it "rejects missing image url" do
+        @piece["books"][0]["images"][0].delete('url')
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Image must have URL')
+      end
+      it "rejects empty image filename" do
+        @piece["books"][0]["images"][0]["filename"] = ''
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Image must have Filename')
+      end
+      it "rejects nil image filename" do
+        @piece["books"][0]["images"][0]["filename"] = nil
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Image must have Filename')
+      end
+      it "rejects missing image filename" do
+        @piece["books"][0]["images"][0].delete('filename')
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Image must have Filename')
+      end
+      it "rejects if filename's file doesn't exist" do
+        File.delete('./slug/file.jpg')
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq("'file.jpg' doesn't exist")
+      end
+      it "rejects book slug that's not in book list" do
+        @piece["books"][0]["slug"] = 'alwefijalewij'
+        pv = pv_factory(piece: @piece)
+        result = pv.validate
+        expect(result.successful?).to be_falsey
+        expect(result.errors.first).to eq('Book Slug not found in Book list')
+      end
+    end
   end
 end
