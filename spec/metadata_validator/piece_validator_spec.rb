@@ -2,15 +2,16 @@ require_relative '../../lib/metadata_validator/piece_validator'
 require 'yaml'
 
 
-def pv_factory(books: YAML.load_file('./spec/fixtures/book_list.yaml'), manuscripts: YAML.load_file('./spec/fixtures/manuscript_list.yaml'),
+def pv_factory(repo_root: './', books: YAML.load_file('./spec/fixtures/book_list.yaml'), manuscripts: YAML.load_file('./spec/fixtures/manuscript_list.yaml'),
   piece: YAML.load_file('./spec/fixtures/basic.yaml'), slug: 'slug')  
-  File.open("./#{slug}/metadata.yaml", 'w') {|f| f.write piece.to_yaml } 
-  PieceValidator.new(books: books, manuscripts: manuscripts, slug: slug)
+  File.open("#{repo_root}/#{slug}/metadata.yaml", 'w') {|f| f.write piece.to_yaml } 
+  PieceValidator.new(repo_root: repo_root, books: books, manuscripts: manuscripts, slug: slug)
 end
 describe PieceValidator do
   before(:each) do
     @slug = 'slug'
     Dir.mkdir("./slug")
+    `touch ./slug/slug.pdf`
   end
   after(:each) do
     FileUtils.rm_r "./slug"
@@ -19,23 +20,27 @@ describe PieceValidator do
     before(:each) do
       @books = YAML.load_file('./spec/fixtures/book_list.yaml')
       @manuscripts = YAML.load_file('./spec/fixtures/manuscript_list.yaml')
+      @repo_root = './'
       piece = YAML.load_file('./spec/fixtures/basic.yaml')
       File.open("./#{@slug}/metadata.yaml", 'w') {|f| f.write piece.to_yaml } 
     end
     it "accepts good input" do
-      v = PieceValidator.new(books: @books, manuscripts: @manuscripts, slug: @slug)
+      v = PieceValidator.new(repo_root: @repo_root, books: @books, manuscripts: @manuscripts, slug: @slug)
       expect(v.books[0]['slug'].class).to eq(String)
       expect(v.manuscripts[0]['slug'].class).to eq(String)
       expect(v.slug.class).to eq(String)
     end
     it "rejects missing books" do
-      expect{PieceValidator.new(manuscripts: @manuscripts, slug: @slug)}.to raise_error(ArgumentError)
+      expect{PieceValidator.new(repo_root: @repo_root, manuscripts: @manuscripts, slug: @slug)}.to raise_error(ArgumentError)
     end
     it "rejects missing manuscripts" do
-      expect{PieceValidator.new(books: @books, slug: @slug)}.to raise_error(ArgumentError)
+      expect{PieceValidator.new(repo_root: @repo_root, books: @books, slug: @slug)}.to raise_error(ArgumentError)
     end
     it "rejects missing slug" do
-      expect{PieceValidator.new(books: @books, manuscripts: @manuscripts)}.to raise_error(ArgumentError)
+      expect{PieceValidator.new(repo_root: @repo_root, books: @books, manuscripts: @manuscripts)}.to raise_error(ArgumentError)
+    end
+    it "rejects missing repo_root" do
+      expect{PieceValidator.new(slug: @slug, books: @books, manuscripts: @manuscripts)}.to raise_error(ArgumentError)
     end
   end
   describe "validate" do
@@ -46,6 +51,21 @@ describe PieceValidator do
       expect(result.successful?).to be_falsey
       expect(result.errors.first).to eq('metadata.yaml file missing')
     end
+    it "rejects invalid yaml" do
+      pv = pv_factory
+      FileUtils.copy("./spec/fixtures/bad.yaml","./#{@slug}/metadata.yaml")
+      result = pv.validate
+      expect(result.successful?).to be_falsey
+      expect(result.errors.first).to include('metadata.yaml is invalid: ')
+    end
+    it "rejects when there is no pdf with same name as slug" do
+      pv = pv_factory
+      File.delete('./slug/slug.pdf')
+      result = pv.validate
+      expect(result.successful?).to be_falsey
+      expect(result.errors.first).to include("'slug.pdf' doesn't exist")
+    
+    end
     context "basic data" do
       before(:each) do
         @piece = YAML.load_file('./spec/fixtures/basic.yaml')
@@ -54,6 +74,11 @@ describe PieceValidator do
         pv = pv_factory
         result = pv.validate
         expect(result.successful?).to be_truthy
+      end
+      it "has slug in successful result" do
+        pv = pv_factory
+        result = pv.validate
+        expect(result.slug).to eq(@slug)
       end
       it "rejects missing title" do
         @piece.delete("title")

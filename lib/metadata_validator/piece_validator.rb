@@ -1,20 +1,25 @@
-#assumes executed in the repo root
+require_relative "./result"
 class PieceValidator
-  attr_reader :books, :manuscripts, :slug
-  def initialize(books:, manuscripts:, slug:)
+  attr_reader :books, :manuscripts, :slug, :repo_root
+  def initialize(repo_root:, books:, manuscripts:, slug:)
     @books = books
     @manuscripts = manuscripts
 		@slug = slug
+    @repo_root = repo_root
   end
 
   def validate
-    result = Result.new
+    result = Result.new(@slug)
 		begin 
-      piece = YAML.load_file("./#{@slug}/metadata.yaml")
-	  rescue
+      piece = YAML.load_file("#{repo_root}/#{@slug}/metadata.yaml")
+	  rescue Errno::ENOENT
 			result.add_error('metadata.yaml file missing')
 			return result
+    rescue Exception => e
+      result.add_error("metadata.yaml is invalid: #{e.message}")
+      return result
 		end
+	  result.add_error("'#{@slug}.pdf' doesn't exist") unless File.exists?("#{repo_root}/#{@slug}/#{@slug}.pdf")
 		result.add_error('Need Title') if nempty?(piece['title'])
 		result.add_error('Need Composer') if nempty?(piece["composer"])
     if nempty?(piece["voicings"]) or piece["voicings"].all? {|i| i.nil? or i == ""}
@@ -64,24 +69,9 @@ class PieceValidator
 		images.each do |img|
 			result.add_error('Image must have URL') if nempty?(img["url"])
 			result.add_error('Image must have Filename') if nempty?(img["filename"])
-			result.add_error("'#{img["filename"]}' doesn't exist") unless File.exists?("./#{@slug}/#{img["filename"]}")
+			result.add_error("'#{img["filename"]}' doesn't exist") unless File.exists?("#{@repo_root}/#{@slug}/#{img["filename"]}")
 		end
 	  result	
 	end
 end
 
-class Result
-  attr_reader :errors	
-  def initialize
-    @errors = [] 
-  end
-
-  def successful?
-    @errors.empty? 
-  end
-
-	def add_error(error)
-		@errors.concat(Array(error))
-	end
-
-end
