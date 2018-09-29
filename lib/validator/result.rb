@@ -1,7 +1,7 @@
 require 'byebug'
 class Result
   attr_reader :errors, :slug
-  def initialize(slug = 'slug')
+  def initialize(slug)
     @slug = slug
     @errors = [] 
   end

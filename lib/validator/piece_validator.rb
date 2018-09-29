@@ -65,7 +65,7 @@ class PieceValidator
 	end
 
 	def validate_images(images)
-		result = Result.new
+		result = Result.new(@slug)
 		images.each do |img|
 			result.add_error('Image must have URL') if nempty?(img["url"])
 			result.add_error('Image must have Filename') if nempty?(img["filename"])

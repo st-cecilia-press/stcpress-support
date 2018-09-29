@@ -1,4 +1,4 @@
-require_relative '../../lib/metadata_validator/lyrics_validator'
+require_relative '../../lib/validator/lyrics_validator'
 
 describe LyricsValidator do
   before(:each) do

@@ -1,4 +1,4 @@
-require_relative '../../lib/metadata_validator/piece_validator'
+require_relative '../../lib/validator/piece_validator'
 require 'yaml'
 
 

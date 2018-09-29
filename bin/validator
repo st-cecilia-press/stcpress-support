@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+require 'pathname'
+
+
+ENV['BUNDLE_GEMFILE'] ||= File.expand_path("../../Gemfile", Pathname.new(__FILE__).realpath)
+
+$LOAD_PATH.unshift File.expand_path('../../lib/validator', Pathname.new(__FILE__).realpath)
+
+
+require 'bundler/setup'
+require 'repo_validator'
+
+puts  RepoValidator.new.validate

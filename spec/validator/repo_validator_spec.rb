@@ -1,5 +1,5 @@
-require_relative '../../lib/metadata_validator/repo_validator'
-require_relative '../../lib/metadata_validator/piece_validator'
+require_relative '../../lib/validator/repo_validator'
+require_relative '../../lib/validator/piece_validator'
 require 'yaml'
 
 describe RepoValidator do
@@ -15,13 +15,13 @@ describe RepoValidator do
     it "rejects invalid directory" do
       expect{RepoValidator.new(directory: './alseifajesi')}.to raise_error(ArgumentError, 'directory does not exist')
     end
-    it "has default manuscripts_path of lib/metadata_validator/manuscripts" do
+    it "has default manuscripts_path of lib/validator/manuscripts" do
       rv = RepoValidator.new
-      expect(rv.manuscripts_path).to include('/lib/metadata_validator/manuscripts.yaml') 
+      expect(rv.manuscripts_path).to include('/lib/validator/manuscripts.yaml') 
     end
-    it "has default books_path of lib/metadata_validator/books" do
+    it "has default books_path of lib/validator/books" do
       rv = RepoValidator.new
-      expect(rv.books_path).to include('/lib/metadata_validator/books.yaml') 
+      expect(rv.books_path).to include('/lib/validator/books.yaml') 
     end
     it "accepts custom path for manuscripts" do
       rv = RepoValidator.new(manuscripts_path: './spec/fixtures/manuscript_list.yaml')

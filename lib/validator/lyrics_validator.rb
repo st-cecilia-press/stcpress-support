@@ -8,7 +8,7 @@ class LyricsValidator
     raise ArgumentError, 'directory or slug does not exist' unless File.directory?(directory) 
   end
   def validate
-    result = Result.new
+    result = Result.new(@slug)
     if !File.exists?(lyrics_path)
       return result
     end
