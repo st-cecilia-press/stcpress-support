@@ -23,9 +23,11 @@ OptionParser.new do |opts|
      exit
    end
 end.parse!
-if internet == 'default'
+
+case internet
+when 'default'
   Downloader.new.run
-elsif internet
+when true
   Downloader.new(force: true).run
 end 
 
