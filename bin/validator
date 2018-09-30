@@ -13,10 +13,10 @@ require 'optparse'
 require 'repo_validator'
 require 'downloader'
 
-internet = 'default'
+download = 'default'
 OptionParser.new do |opts|
   opts.on("-d", "--[no-]download", "Download books.yaml and manuscripts.yaml from github") do |d|
-    internet = d
+    download = d
   end 
    opts.on("-h", "--help", "Prints this help") do
      puts opts
@@ -24,7 +24,7 @@ OptionParser.new do |opts|
    end
 end.parse!
 
-case internet
+case download
 when 'default'
   Downloader.new.run
 when true
