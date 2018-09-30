@@ -9,6 +9,24 @@ $LOAD_PATH.unshift File.expand_path('../../lib/validator', Pathname.new(__FILE__
 
 
 require 'bundler/setup'
+require 'optparse'
 require 'repo_validator'
+require 'downloader'
+
+internet = 'default'
+OptionParser.new do |opts|
+  opts.on("-d", "--[no-]download", "Download books.yaml and manuscripts.yaml from github") do |d|
+    internet = d
+  end 
+   opts.on("-h", "--help", "Prints this help") do
+     puts opts
+     exit
+   end
+end.parse!
+if internet == 'default'
+  Downloader.new.run
+elsif internet
+  Downloader.new(force: true).run
+end 
 
 puts  RepoValidator.new.validate
