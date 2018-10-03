@@ -1,0 +1,88 @@
+#(set-default-paper-size "letter")
+<% if @transposed %>
+#(set-global-staff-size scStaffSizeTranspose )
+<% else %>
+#(set-global-staff-size scStaffSize )
+<% end %>
+book {
+<% if @transposed %>
+\bookOutputSuffix "transposed"
+<% end %>
+\paper {
+  <% if @transposed %>
+    system-system-spacing.minimum-distance = \scMinimumSystemSpacingTranspose
+  <% else %>
+    system-system-spacing.minimum-distance = \scMinimumSystemSpacing
+  <% end %>
+  print-page-number = ##f
+  print-first-page-number = ##f
+  top-margin = 0.5\in
+  left-margin = 0.75\in
+  right-margin = 0.75\in
+  right-bottom = 0.5\in
+  last-bottom-spacing = #'((basic-distance . 4) (padding . 4) (stretchability . 1))
+  oddFooterMarkup = \markup { 
+  \column{
+    \fill-line { \line {
+      \italic \fromproperty #'header:title
+      " - Page"
+      \fromproperty #'page:page-number-string
+    } } 
+	\fill-line { \tiny { \line{© Monique Rio (CC BY 4.0) | Edition Date: \scDate } } } }
+  }
+  
+  evenFooterMarkup = \oddFooterMarkup
+}
+
+\header{
+  title = \scTitle
+  subtitle = \scSubtitle
+  meter = \scMeter
+  poet = \scPoet
+  composer = \scComposer
+  arranger = \scArranger
+  copyright = \scCopyright
+  tagline = \scTagline
+}
+\score {
+  \new ChoirStaff <<
+   <% for @part in @parts %>
+    \new Staff = \scMusic<%= @part %>Name <<
+      \set Staff.midiInstrument = #"oboe"
+      \new Voice = "<%=@part.downcase%>" {
+        <%if @transposed %>
+        \transpose \scTransposeFrom \scTransposeTo { 
+        <% end %>
+        \scGlobal 
+        <% if @transposed %>
+         \scMusic<%= @part %>ClefTransposed
+        <% else %>
+         \scMusic<%= @part %>Clef
+        <% end %>
+          \scMusic<%= @part %>
+        <% if  @transposed %> } <% end %>
+        
+      }
+      <% if @verses %>
+      <<
+        
+        <% suffix = 'A' %>
+        <% 1.upto(@verses){ |n| %>
+          \new Lyrics \lyricsto "<%=@part.downcase%>" { \scWords<%=@part%><%=suffix%> } 
+          <% suffix.next! %>
+        <% } %>
+      >>
+      <% end %>
+    >>
+   <% end %>
+  >>
+  \layout { }
+  \midi {
+    \context {
+      \Score
+      tempoWholesPerMinute = \scTempo
+    }
+  }
+}
+  }
+}

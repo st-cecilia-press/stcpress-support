@@ -1,0 +1,66 @@
+%score_options {"parts": <%=@parts.length%>, "verses": <%=@verses%>, "transposed": <%=@transposed%>}
+scDate = "DATE"
+
+\include "../include/sc_functions.ly"
+\include "../include/sc_layout_vocal.ly"
+<% if @transposed %>
+scStaffSizeTranspose = 19 
+<% end %>
+scStaffSize = 19 
+#(ly:set-option 'midi-extension "mid")
+
+\include "english.ly"
+
+scTempo = #(ly:make-moment 120 4)
+scTitle = ""
+scSubtitle = ""
+scComposer = ""
+scArranger = ""
+scMeter = ""
+scPoet = ""
+scCopyright = ""
+scTagline = ""
+
+
+
+scGlobal= {
+  \key d \dorian
+  \time 4/2
+  \autoBeamOff
+}
+
+<% if @transposed %>
+scTransposeFrom =  c 
+scTransposeTo =  g 
+<% end %>
+
+<% if @transposed %>
+scMinimumSystemSpacingTranspose = #8
+<% end %>
+scMinimumSystemSpacing = #8
+
+<% for @part in @parts %>
+scMusic<%=@part[:number]%>Name = "<%=@part[:name]%>"
+scMusic<%=@part[:number]%>Clef = \clef "<%=@part[:clef]%>"
+<% if @transposed %>
+scMusic<%=@part[:number]%>ClefTransposed = \clef "<%=@part[:clef]%>"
+<% end %>
+scMusic<%=@part[:number]%> =   \relative c' {  
+
+}
+<% end %>
+
+
+<% for @part in @parts %>
+  <% suffix = 'A' %>
+  <% 1.upto(@verses){ |n| %>
+scWords<%=@part[:number]%><%=suffix%> = \lyricmode {
+
+}
+    <% suffix.next! %>
+  <% } %>
+<% end %>
+
+\include "./score.ly"
+
+\version "2.18.2"  % necessary for upgrading to future LilyPond versions.

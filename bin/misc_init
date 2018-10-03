@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+
+require 'pathname'
+
+
+ENV['BUNDLE_GEMFILE'] ||= File.expand_path("../../Gemfile", Pathname.new(__FILE__).realpath)
+
+$LOAD_PATH.unshift File.expand_path('../../lib/downloader', Pathname.new(__FILE__).realpath)
+$LOAD_PATH.unshift File.expand_path('../../lib/misc_init', Pathname.new(__FILE__).realpath)
+
+require 'bundler/setup'
+require 'optparse'
+require 'fileutils'
+require 'downloader'
+require 'score_generator'
+require 'vocal_template_generator'
+
+options = {parts: 4, verses: 1, transposed: false}
+OptionParser.new do |parser|
+    parser.on("-p", "--parts NUMBER", "Require NUMBER of parts; Default: 4") do |parts|
+        options[:parts] = parts.to_i
+    end
+    parser.on("-v", "--verses NUMBER", "Require NUMBER of verses; Default: 1") do |verses|
+        options[:verses] = verses.to_i
+    end
+    parser.on("-t", "--transposed", "Sets up template for transposition") do
+        options[:transposed] = true
+    end
+    parser.on("-h", "--help",  "Prints this Help") do 
+      puts parser
+    end
+end.parse!
+
+Downloader.new(output: './metadata.yaml', remote: 'https://raw.githubusercontent.com/st-cecilia-press/stcpress-data/master/metadata_template.yaml').run unless File.exist?('./metadata.yaml')
+
+lily_file = File.basename(FileUtils.pwd) + '.ly'
+
+vtg = VocalTemplateGenerator.new(options)
+vtg.save(lily_file)
+sg = ScoreGenerator.new(options)
+sg.save('./score.ly')
+
