@@ -6,12 +6,24 @@ require 'pathname'
 ENV['BUNDLE_GEMFILE'] ||= File.expand_path("../../Gemfile", Pathname.new(__FILE__).realpath)
 
 $LOAD_PATH.unshift File.expand_path('../../lib/validator', Pathname.new(__FILE__).realpath)
+$LOAD_PATH.unshift File.expand_path('../../lib/downloader', Pathname.new(__FILE__).realpath)
 
 
 require 'bundler/setup'
 require 'optparse'
 require 'repo_validator'
 require 'downloader'
+
+class Config
+  attr_reader :manuscripts_remote, :books_remote, :manuscripts_output, :books_output
+  def initialize
+    path = File.join((File.expand_path('..',__dir__)), 'lib', 'validator' )
+    @manuscripts_remote = 'https://raw.githubusercontent.com/st-cecilia-press/stcpress-data/master/manuscripts.yaml'
+    @books_remote = 'https://raw.githubusercontent.com/st-cecilia-press/stcpress-data/master/books.yaml'
+    @manuscripts_output =  "#{path}/manuscripts.yaml"
+    @books_output =  "#{path}/books.yaml"
+  end
+end
 
 download = 'default'
 OptionParser.new do |opts|
@@ -24,11 +36,17 @@ OptionParser.new do |opts|
    end
 end.parse!
 
+def download_runner(force: false)
+  config = Config.new
+  Downloader.new(output:config.manuscripts_output, remote: config.manuscripts_remote, force: force).run
+  Downloader.new(output:config.books_output, remote: config.books_remote, force: force).run
+end
+
 case download
 when 'default'
-  Downloader.new.run
+  download_runner
 when true
-  Downloader.new(force: true).run
+  download_runner(force: true)
 end 
 
 puts  RepoValidator.new.validate
